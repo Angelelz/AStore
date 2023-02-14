@@ -7,19 +7,12 @@ exports.getDb = exports.initializeDb = void 0;
 const promise_1 = __importDefault(require("mysql2/promise"));
 let pool;
 const initializeDb = () => {
-    console.log({
+    pool = promise_1.default.createPool({
         host: process.env.DATABASE_HOST,
         database: process.env.DATABASE_NAME,
         user: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         port: +process.env.DATABASE_PORT,
-    });
-    pool = promise_1.default.createPool({
-        host: 'backend.angelelz.com',
-        database: "astore",
-        user: "angel",
-        password: "Angelito",
-        port: 3306,
     });
 };
 exports.initializeDb = initializeDb;
@@ -57,6 +50,13 @@ exports.getDb = getDb;
     REFERENCES `astore`.`users` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
+
+  CREATE TABLE IF NOT EXISTS `sessions` (
+  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
+  `expires` int(11) unsigned NOT NULL,
+  `data` mediumtext COLLATE utf8mb4_bin,
+  PRIMARY KEY (`session_id`)
+) ENGINE=InnoDB
 
 
 

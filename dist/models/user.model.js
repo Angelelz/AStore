@@ -22,10 +22,18 @@ class User {
             city,
         };
     }
+    async getUserByEmail() {
+        const [dbUser] = await (0, database_1.getDb)().query('SELECT * FROM users WHERE email = ?', [this.email]);
+        return dbUser[0];
+    }
+    async userExists() {
+        const user = await this.getUserByEmail();
+        return !!user;
+    }
     async signup() {
         const hasedPassword = await bcryptjs_1.default.hash(this.password, 12);
         const userId = crypto_1.default.randomUUID();
-        const [userDb] = await (0, database_1.getDb)().query("INSERT INTO users (name, password, email, id) VALUES (?)", [[this.fullname, hasedPassword, this.email, userId]]);
+        await (0, database_1.getDb)().query("INSERT INTO users (name, password, email, id) VALUES (?)", [[this.fullname, hasedPassword, this.email, userId]]);
         await (0, database_1.getDb)().query("INSERT INTO addresses (street, postalCode, city, id, userId) VALUES (?)", [
             [
                 this.address.street,
@@ -35,6 +43,9 @@ class User {
                 userId,
             ],
         ]);
+    }
+    passwordMatch(hashedPassword) {
+        return bcryptjs_1.default.compare(this.password, hashedPassword);
     }
 }
 exports.User = User;

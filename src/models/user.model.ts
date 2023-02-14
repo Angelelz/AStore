@@ -1,23 +1,24 @@
 import { getDb } from "../data/database";
 import bcrypjs from "bcryptjs";
 import crypto from 'crypto'
+import { DBUser } from "../types";
 
 export class User {
   email: string;
   password: string;
-  fullname: string;
+  fullname?: string;
   address: {
-    street: string;
-    postalCode: number;
-    city: string;
+    street?: string;
+    postalCode?: number;
+    city?: string;
   };
   constructor(
     email: string,
     password: string,
-    fullname: string,
-    street: string,
-    postal: number,
-    city: string
+    fullname?: string,
+    street?: string,
+    postal?: number,
+    city?: string
   ) {
     this.email = email;
     this.password = password;
@@ -29,11 +30,21 @@ export class User {
     };
   }
 
+  async getUserByEmail() {
+    const [dbUser] = await getDb().query<DBUser[]>('SELECT * FROM users WHERE email = ?', [this.email]);
+    return dbUser[0]
+  }
+
+  async userExists() {
+    const user = await this.getUserByEmail();
+    return !!user
+  }
+
   async signup() {
     const hasedPassword = await bcrypjs.hash(this.password, 12);
     const userId = crypto.randomUUID()
 
-    const [userDb]: any = await getDb().query(
+    await getDb().query(
       "INSERT INTO users (name, password, email, id) VALUES (?)",
       [[this.fullname, hasedPassword, this.email, userId]]
     );
@@ -51,4 +62,8 @@ export class User {
       ]
     );
   }
+  passwordMatch(hashedPassword: string) {
+    return bcrypjs.compare(this.password, hashedPassword);
+  }
+
 }
