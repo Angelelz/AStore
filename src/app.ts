@@ -10,6 +10,7 @@ import expressSession from 'express-session'
 import authRoutes from './routes/auth.routes'
 import baseRoutes from './routes/base.routes'
 import productsRoutes from './routes/products.routes'
+import adminRoutes from './routes/admin.routes'
 import { addCSRFToken } from './middlewares/csrf-token';
 import { handleErrors } from './middlewares/error-handler';
 import { createSessionConfig } from './data/session-store';
@@ -33,6 +34,7 @@ app.use(checkAuthStatus)
 app.use(baseRoutes)
 app.use(authRoutes);
 app.use(productsRoutes)
+app.use('/admin', adminRoutes)
 
 app.use(handleErrors)
 

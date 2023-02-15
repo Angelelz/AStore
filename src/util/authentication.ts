@@ -3,6 +3,7 @@ import { DBUser } from "../types";
 
 export const createUserSession = (req: Request, user: DBUser, action?: () => void) => {
   req.session.uid = user.id;
+  req.session.isAdmin = user.isAdmin;
   req.session.save(action);
 }
 

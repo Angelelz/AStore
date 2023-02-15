@@ -76,3 +76,30 @@ a {
   background-color: var(--color-primary-700);
   border-color: var(--color-primary-700);
 }
+
+.btn-alt {
+  background-color: transparent;
+  color: var(--color-primary-500);
+}
+
+.btn-alt:hover, .btn-alt:active {
+  background-color: var(--color-primary-500-bg);
+}
+
+.alert {
+  border-radius: var(--border-radius-small);
+  background-color: var(--color-error-100);
+  color: var(--color-error-500);
+  padding: var(--space-4);
+}
+
+.alert h2 {
+  font-size: 1rem;
+  margin: var(--space-2) 0;
+  text-transform: uppercase;
+}
+
+.alert p {
+  margin: var(--space-2) 0;
+  
+}
