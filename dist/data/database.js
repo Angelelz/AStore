@@ -58,7 +58,18 @@ exports.getDb = getDb;
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB
 
+ALTER TABLE `astore`.`users`
+ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `password`;
 
+CREATE TABLE `astore`.`products` (
+  `id` VARCHAR(255) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `summary` VARCHAR(255) NOT NULL,
+  `price` DECIMAL(10,2) NOT NULL,
+  `description` TEXT NOT NULL,
+  `image` VARCHAR(255) NOT NULL,
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  PRIMARY KEY (`id`));
 
 */
 //# sourceMappingURL=database.js.map

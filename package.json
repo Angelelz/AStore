@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc & node dist/app.js",
-    "dev1": "concurrently \"ts-node src/tools/copyfiles\" \"npx tsc --watch\" \"nodemon -q dist/app.js\"",
-    "dev": "ts-node-dev src/app.ts"
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/app.js\"",
+    "dev1": "ts-node-dev src/app.ts"
   },
   "author": "Angelelz",
   "license": "ISC",

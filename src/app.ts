@@ -15,6 +15,7 @@ import { addCSRFToken } from './middlewares/csrf-token';
 import { handleErrors } from './middlewares/error-handler';
 import { createSessionConfig } from './data/session-store';
 import { checkAuthStatus } from './middlewares/auth-check';
+import { protectRoutes } from './middlewares/protect-routes';
 
 const port = 3000;
 const viewsPath = path.join(__dirname, '..', 'views')
@@ -23,6 +24,7 @@ app.set('view engine', 'ejs');
 app.set('views', viewsPath);
 
 app.use(express.static('public'))
+app.use("/products/assets", express.static('product-data'))
 app.use(express.urlencoded({extended: false}));
 
 app.use(expressSession(createSessionConfig()))
@@ -34,6 +36,7 @@ app.use(checkAuthStatus)
 app.use(baseRoutes)
 app.use(authRoutes);
 app.use(productsRoutes)
+app.use(protectRoutes)
 app.use('/admin', adminRoutes)
 
 app.use(handleErrors)
