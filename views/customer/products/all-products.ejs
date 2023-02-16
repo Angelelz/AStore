@@ -1,11 +1,18 @@
 <%- include('../../shared/includes/head', {pageTitle: "All products"}) %>
+<link rel="stylesheet" href="/styles/products.css">
 </head>
 
 <body>
   <%- include('../../shared/includes/header') %>
   <main>
     <h1>All products</h1>
-    <p>A list of products...</p>
+    <ul id="products-grid">
+    <% products.forEach(product => { %>
+     <li>
+      <%- include('../../shared/includes/product-item', {product}) %>
+     </li>
+    <% }) %>
+  </ul>
   </main>
 
   <%- include('../../shared/includes/footer') %>

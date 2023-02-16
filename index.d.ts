@@ -1,9 +1,15 @@
-import express from "express";
+import { Cart } from "./src/models/cart.model";
 
 declare global {
   namespace Express {
-    interface Request {
-      locals: Record<string,any>
+    interface Response {
+      locals: {
+        uuid: string,
+        isAuth: boolean,
+        isAdmin: boolean
+        cart: Cart,
+        csrfToken: string,
+      }
     }
   }
 }

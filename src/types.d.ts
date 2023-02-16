@@ -1,20 +1,33 @@
-import express from 'express';
-import { RowDataPacket } from 'mysql2';
+import express from "express";
+import { RowDataPacket } from "mysql2";
+import { Cart } from "./models/cart.model";
+import { Product } from "./models/products.model";
 
-declare module 'express-session' {
+declare module "express-session" {
   interface SessionData {
-    uid: string | null;
-    isAdmin: 0 | 1;
+    uid?: string | null;
+    isAdmin?: 0 | 1;
     flashData?: any;
+    cart?: Cart;
+  }
+}
+
+declare module "express-serve-static-core" {
+  interface Locals {
+      uuid: string;
+      isAuth: boolean;
+      isAdmin: boolean;
+      cart: Cart;
+      csrfToken: string;
   }
 }
 
 export interface DBUser extends RowDataPacket {
-  id: string,
-  email: string,
-  name: string,
-  password: string,
-  isAdmin: 0 | 1,
+  id: string;
+  email: string;
+  name: string;
+  password: string;
+  isAdmin: 0 | 1;
 }
 
 export interface DBProduct extends RowDataPacket {
@@ -28,14 +41,14 @@ export interface DBProduct extends RowDataPacket {
 export type ProductData = DBProduct & {
   imagePath: string;
   imageUrl: string;
-}
+};
 
 export type SignUpData = {
-  email: string,
-  ["confirm-email"]: string,
-  password: string,
-  fullname: string,
-  street: string,
-  postal: string,
-  city: string,
-}
+  email: string;
+  ["confirm-email"]: string;
+  password: string;
+  fullname: string;
+  street: string;
+  postal: string;
+  city: string;
+};
