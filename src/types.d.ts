@@ -30,6 +30,8 @@ export interface DBUser extends RowDataPacket {
   isAdmin: 0 | 1;
 }
 
+export type OrderStatus = 'pending' | 'fulfilled' | 'cancelled';
+
 export interface DBProduct extends RowDataPacket {
   title: string;
   summary: string;

@@ -15,8 +15,9 @@ export const addCartItemPut: RequestHandler = async (req, res, next) => {
   }
 
   const cart = res.locals.cart
+  console.log("In add to cart put", cart)
 
-  cart.addToCart(product);
+  await cart.addToCart(product);
   req.session.cart = cart;
 
   res.status(201).json({
@@ -36,7 +37,7 @@ export const addCartItemPost: RequestHandler = async (req, res, next) => {
 
   const cart = res.locals.cart
 
-  cart.addToCart(product);
+  await cart.addToCart(product);
   req.session.cart = cart;
 
   res.status(201).json({
@@ -45,10 +46,10 @@ export const addCartItemPost: RequestHandler = async (req, res, next) => {
   })
 }
 
-export const updateCartItem: RequestHandler = (req, res) => {
+export const updateCartItem: RequestHandler = async (req, res) => {
   const cart = res.locals.cart;
 
-  const updatedItemData = cart.updateItem(req.body.productId, +req.body.quantity);
+  const updatedItemData = await cart.updateItem(req.body.productId, +req.body.quantity);
 
   req.session.cart = cart;
 

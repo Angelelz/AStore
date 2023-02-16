@@ -12,6 +12,7 @@ import baseRoutes from './routes/base.routes'
 import productsRoutes from './routes/products.routes'
 import adminRoutes from './routes/admin.routes'
 import cartRoutes from './routes/cart.routes'
+import ordersRoutes from './routes/orders.routes'
 import { addCSRFToken } from './middlewares/csrf-token';
 import { handleErrors } from './middlewares/error-handler';
 import { createSessionConfig } from './data/session-store';
@@ -43,6 +44,7 @@ app.use(authRoutes);
 app.use(productsRoutes)
 app.use('/cart', cartRoutes)
 app.use(protectRoutes)
+app.use('/orders', ordersRoutes)
 app.use('/admin', adminRoutes)
 
 app.use(handleErrors)

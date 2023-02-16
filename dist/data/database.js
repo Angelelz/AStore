@@ -52,24 +52,77 @@ exports.getDb = getDb;
     ON UPDATE NO ACTION);
 
   CREATE TABLE IF NOT EXISTS `sessions` (
-  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
-  `expires` int(11) unsigned NOT NULL,
-  `data` mediumtext COLLATE utf8mb4_bin,
-  PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB
+    `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
+    `expires` int(11) unsigned NOT NULL,
+    `data` mediumtext COLLATE utf8mb4_bin,
+    PRIMARY KEY (`session_id`)
+  ) ENGINE=InnoDB
 
-ALTER TABLE `astore`.`users`
-ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `password`;
+  ALTER TABLE `astore`.`users`
+  ADD COLUMN `isAdmin` TINYINT NOT NULL DEFAULT 0 AFTER `password`;
 
-CREATE TABLE `astore`.`products` (
-  `id` VARCHAR(255) NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `summary` VARCHAR(255) NOT NULL,
-  `price` DECIMAL(10,2) NOT NULL,
-  `description` TEXT NOT NULL,
-  `image` VARCHAR(255) NOT NULL,
+  CREATE TABLE `astore`.`products` (
+    `id` VARCHAR(255) NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `summary` VARCHAR(255) NOT NULL,
+    `price` DECIMAL(10,2) NOT NULL,
+    `description` TEXT NOT NULL,
+    `image` VARCHAR(255) NOT NULL,
+    UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+    PRIMARY KEY (`id`));
+
+    ========================================
+    Created manually
+  
+  CREATE TABLE `astore`.`carts` (
+    `id` VARCHAR(255) NOT NULL,
+    `totalQuantity` INT NOT NULL,
+    `totalPrice` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
+
+  CREATE TABLE `astore`.`cartItems` (
+    `id` VARCHAR(255) NOT NULL,
+    `quantity` INT NOT NULL,
+    `totalPrice` DECIMAL(10,2) NOT NULL,
+    `productId` VARCHAR(255) NOT NULL,
+    `cartId` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  PRIMARY KEY (`id`));
+  INDEX `productId_idx` (`productId` ASC) VISIBLE,
+  INDEX `cartId_idx` (`cartId` ASC) VISIBLE,
+  CONSTRAINT `productId`
+    FOREIGN KEY (`productId`)
+    REFERENCES `astore`.`products` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `cartId`
+    FOREIGN KEY (`cartId`)
+    REFERENCES `astore`.`carts` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+  CREATE TABLE `astore`.`orders` (
+    `id` VARCHAR(255) NOT NULL,
+    `date` DATETIME NOT NULL,
+    `status` VARCHAR(255) NOT NULL,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `userId` VARCHAR(255) NOT NULL,
+    `cartId` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  INDEX `userId_idx` (`userId` ASC) VISIBLE,
+  CONSTRAINT `orderUserId`
+    FOREIGN KEY (`userId`)
+    REFERENCES `astore`.`users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  INDEX `cartId_idx` (`cartId` ASC) VISIBLE,
+  CONSTRAINT `orderCartId`
+    FOREIGN KEY (`cartId`)
+    REFERENCES `astore`.`carts` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
 
 */
 //# sourceMappingURL=database.js.map
