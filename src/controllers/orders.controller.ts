@@ -1,7 +1,38 @@
 import { RequestHandler } from "express";
+import { User } from "../models/user.model";
+import { Order } from "../models/order.model";
+import { DBUser } from "../types";
 
-export const addOrder: RequestHandler = (req, res, next) => {
+export const getOrders: RequestHandler = async (req, res, next) => {
+  try {
+    const orders = await Order.findAllForUser(res.locals.uid);
+    res.render('customer/orders/all-orders', {
+      orders: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const addOrder: RequestHandler = async (req, res, next) => {
   const cart = res.locals.cart;
+  let dbUser: User;
+  try {
+    dbUser = await User.getFullUserById(res.locals.uid)
+  } catch (error) {
+    return next(error)
+  }
+  const order = new Order(cart, dbUser);
 
+  try {
+    await order.save()
+  } catch (error) {
+    return next(error);
+  }
+
+  req.session.cart = undefined;
+
+  res.redirect('/orders');
   
 }
+

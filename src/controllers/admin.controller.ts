@@ -1,4 +1,5 @@
 import { RequestHandler } from "express"
+import { Order } from "../models/order.model";
 import { Product } from "../models/products.model";
 
 export const getProducts: RequestHandler = async (req, res, next) => {
@@ -91,4 +92,32 @@ export const deleteProductPost: RequestHandler = async (req, res, next) => {
   }
 
   res.redirect('/admin/products')
+}
+
+export const getOrders: RequestHandler = async (req, res, next)  => {
+  try {
+    const orders = await Order.findAll();
+    res.render('admin/orders/admin-orders', {
+      orders: orders
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const updateOrder: RequestHandler = async (req, res, next) => {
+  const orderId = req.params.id;
+  const newStatus = req.body.newStatus;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    order.status = newStatus;
+
+    await order.save();
+
+    res.json({ message: 'Order updated', newStatus: newStatus });
+  } catch (error) {
+    next(error);
+  }
 }

@@ -14,7 +14,7 @@ declare module "express-session" {
 
 declare module "express-serve-static-core" {
   interface Locals {
-      uuid: string;
+      uid: string;
       isAuth: boolean;
       isAdmin: boolean;
       cart: Cart;

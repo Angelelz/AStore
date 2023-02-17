@@ -19,6 +19,8 @@ import { createSessionConfig } from './data/session-store';
 import { checkAuthStatus } from './middlewares/auth-check';
 import { protectRoutes } from './middlewares/protect-routes';
 import { initializeCart } from './middlewares/cart';
+import { updateCartPrices } from './middlewares/update-cart-prices';
+import { notFoundHandler } from './middlewares/not-found';
 
 const port = 3000;
 const viewsPath = path.join(__dirname, '..', 'views')
@@ -34,7 +36,8 @@ app.use(express.json());
 app.use(expressSession(createSessionConfig()))
 app.use(csurf());
 
-app.use(initializeCart)
+app.use(initializeCart);
+app.use(updateCartPrices);
 
 app.use(addCSRFToken)
 app.use(checkAuthStatus)
@@ -43,9 +46,11 @@ app.use(baseRoutes)
 app.use(authRoutes);
 app.use(productsRoutes)
 app.use('/cart', cartRoutes)
-app.use(protectRoutes)
-app.use('/orders', ordersRoutes)
-app.use('/admin', adminRoutes)
+
+app.use('/orders', protectRoutes, ordersRoutes)
+app.use('/admin', protectRoutes, adminRoutes)
+
+app.use(notFoundHandler)
 
 app.use(handleErrors)
 

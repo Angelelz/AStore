@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { RowDataPacket } from 'mysql2';
 import { getDb } from "../data/database";
 import { Product } from "./products.model";
 
@@ -15,7 +16,25 @@ export class CartItem {
     this.quantity = quantity;
     this.totalPrice = quantity * product.price;
   }
-  static createFromCartItem(item: any) {
+  static async getById(id: string) {
+    const [cartItem] = await getDb().query<RowDataPacket[]>('SELECT * FROM cartItems WHERE id = ?', [id]);
+    const product = await Product.getById(cartItem[0].productId)
+    return CartItem.createFromCartItem({
+      product,
+      cartId: cartItem[0].cartId,
+      quantity: cartItem[0].quantity,
+      id: cartItem[0].id
+    })
+  }
+  static async getAll() {
+    const [cartItems] = await getDb().query<RowDataPacket[]>('SELECT * FROM cartItems;');
+    return await Promise.all(cartItems.map((item) => CartItem.getById(item.id)));
+  }
+  static async getByCartId(cartId: string) {
+    const [cartItems] = await getDb().query<RowDataPacket[]>('SELECT * FROM cartItems WHERE cartId = ?', [cartId]);
+    return await Promise.all(cartItems.map((item) => CartItem.getById(item.id)));
+  }
+  static createFromCartItem(item: {product: Product, quantity: number, cartId?: string, id?: string}) {
     const cartItem = new CartItem(item.product, item.quantity);
     cartItem.cartId = item.cartId;
     cartItem.id = item.id;
@@ -41,6 +60,12 @@ export class CartItem {
     console.log("cartItems addQuantity", updateData);
     getDb().query('UPDATE cartItems SET `quantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
   }
+
+  async updateQuantity() {
+    const updateData = [this.quantity, this.totalPrice, this.id ]
+    console.log("cartItems updateQuantity", updateData)
+    await getDb().query('UPDATE `cartItems` SET `quantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
+  }
   
   delete() {
     console.log("cartItems delete", [this.id]);
@@ -63,12 +88,67 @@ export class Cart {
     })
   }
 
+  async updatePrices() {
+    const productIds = this.items.map(function (item) {
+      return item.product.id!;
+    });
+
+    const products = await Product.findMultiple(productIds);
+    // console.log("products", this);
+    const deletableCartItemProductIds: string[] = [];
+
+    for (const cartItem of this.items) {
+      const product = products.find(function (prod) {
+        return prod.id === cartItem.product.id;
+      });
+
+      if (!product) {
+        // product was deleted!
+        // "schedule" for removal from cart
+        deletableCartItemProductIds.push(cartItem.product.id!);
+        continue;
+      }
+
+      // product was not deleted
+      // set product data and total price to latest price from database
+      cartItem.product = product;
+      cartItem.totalPrice = cartItem.quantity * cartItem.product.price;
+    }
+
+    if (deletableCartItemProductIds.length > 0) {
+      this.items = this.items.filter(function (item) {
+        return deletableCartItemProductIds.indexOf(item.product.id!) < 0;
+      });
+    }
+
+    // re-calculate cart totals
+    this.totalQuantity = 0;
+    this.totalPrice = 0;
+
+    for (const item of this.items) {
+      this.totalQuantity = this.totalQuantity + item.quantity;
+      this.totalPrice = this.totalPrice + item.totalPrice;
+    }
+    await this.save();
+  }
+
+  static async getById(cartId: string) {
+    const cartItems = await CartItem.getByCartId(cartId)
+    return new Cart(cartItems, cartId)
+  }
+
   save() {
     if (!this.id) {
       this.id = crypto.randomUUID();
       const insertData = [[this.id, this.totalQuantity, this.totalPrice]]
       console.log("carts save", insertData)
       return getDb().query('INSERT INTO carts (`id`, `totalQuantity`, `totalPrice`) VALUES (?)', insertData);
+    } else {
+      for (const item of this.items) {
+        item.updateQuantity()
+      }
+      console.log("for loop");
+      this.updateQuantity();
     }
   }
 
@@ -113,15 +193,14 @@ export class Cart {
     
     const item = this.items[itemIndex]
     if (newQuantity > 0) { // Need to fix this
-      // const quantityChange = newQuantity - item.quantity;
-      // cartItem.quantity = newQuantity;
-      // cartItem.totalPrice = newQuantity * cartItem.product.price;
-      // this.items[itemIndex] = cartItem;
+      const quantityChange = newQuantity - item.quantity;
+      item.quantity = newQuantity;
+      item.totalPrice = newQuantity * item.product.price;
 
-      // this.totalQuantity = this.totalQuantity + quantityChange;
-      // this.totalPrice += quantityChange * cartItem.product.price;
-      await item.addQuantity(newQuantity);
-      await this.addQuantity(newQuantity, item.product.price)
+      this.totalQuantity = this.totalQuantity + quantityChange;
+      this.totalPrice += quantityChange * item.product.price;
+      await item.updateQuantity();
+      await this.updateQuantity();
       return {
         updatedItemPrice: item.totalPrice
       }

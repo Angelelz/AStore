@@ -40,6 +40,14 @@ export class Product {
     });
   }
 
+  static async findMultiple(ids: string[]) {
+
+    return await Promise.all(ids.map(id => {
+      console.log("promise")
+      return Product.getById(id)
+    }))
+  }
+
   updateImageData() {
     this.imagePath = `product-data/images/${this.image}`;
     this.imageUrl = `/products/assets/images/${this.image}`;
