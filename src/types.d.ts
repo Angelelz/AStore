@@ -2,6 +2,7 @@ import express from "express";
 import { RowDataPacket } from "mysql2";
 import { Cart } from "./models/cart.model";
 import { Product } from "./models/products.model";
+import { User } from "./models/user.model";
 
 declare module "express-session" {
   interface SessionData {
@@ -54,3 +55,11 @@ export type SignUpData = {
   postal: string;
   city: string;
 };
+
+export interface UserRepository {
+  getUserByEmail: (email: string) => Promise<DBUser>,
+  getById: (userId: string) => Promise<DBUser>,
+  getFullUserById: (userId: string) => Promise<User>,
+  signup: (user: User) => Promise<void>,
+  emailExists: (email: string) => Promise<boolean>,
+}

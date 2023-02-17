@@ -1,11 +1,10 @@
 import { RequestHandler } from "express";
 import { User } from "../models/user.model";
 import { Order } from "../models/order.model";
-import { DBUser } from "../types";
 
 export const getOrders: RequestHandler = async (req, res, next) => {
   try {
-    const orders = await Order.findAllForUser(res.locals.uid);
+    const orders = await Order.getAllForUser(res.locals.uid);
     res.render('customer/orders/all-orders', {
       orders: orders,
     });

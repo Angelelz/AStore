@@ -9,7 +9,13 @@ export const initializeDb = () => {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     port: +process.env.DATABASE_PORT!,
+    debug: true,
   });
+  // pool.on('connection', (conn) => {
+  //   console.log("Connection", conn)
+  //   // conn.on('end', (seq) => console.log("Sequence", seq))
+    
+  // })
 };
 
 export const getDb = () => {

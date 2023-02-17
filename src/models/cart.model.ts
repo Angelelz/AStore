@@ -50,25 +50,24 @@ export class CartItem {
       this.product.id,
       cartId
     ]
-    console.log("save cartItems", cartItemValues);
+    
     await getDb().query('INSERT INTO cartItems (`id`, `quantity`, `totalPrice`, `productId`, `cartId`) VALUES (?)', [cartItemValues])
   }
   async addQuantity(quantity: number) {
     this.quantity += quantity;
     this.totalPrice += (quantity * this.product.price)
     const updateData = [this.quantity, this.totalPrice, this.id]
-    console.log("cartItems addQuantity", updateData);
+    
     getDb().query('UPDATE cartItems SET `quantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
   }
 
   async updateQuantity() {
     const updateData = [this.quantity, this.totalPrice, this.id ]
-    console.log("cartItems updateQuantity", updateData)
+
     await getDb().query('UPDATE `cartItems` SET `quantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
   }
   
   delete() {
-    console.log("cartItems delete", [this.id]);
     getDb().query('DELETE FROM `cartItems` WHERE `id` = ?', [this.id])
   }
 }
@@ -94,7 +93,6 @@ export class Cart {
     });
 
     const products = await Product.findMultiple(productIds);
-    // console.log("products", this);
     const deletableCartItemProductIds: string[] = [];
 
     for (const cartItem of this.items) {
@@ -141,13 +139,11 @@ export class Cart {
     if (!this.id) {
       this.id = crypto.randomUUID();
       const insertData = [[this.id, this.totalQuantity, this.totalPrice]]
-      console.log("carts save", insertData)
       return getDb().query('INSERT INTO carts (`id`, `totalQuantity`, `totalPrice`) VALUES (?)', insertData);
     } else {
       for (const item of this.items) {
         item.updateQuantity()
       }
-      console.log("for loop");
       this.updateQuantity();
     }
   }
@@ -156,13 +152,11 @@ export class Cart {
     this.totalQuantity += quantity;
     this.totalPrice += (quantity * price);
     const updateData = [this.totalQuantity, this.totalPrice, this.id ]
-    console.log("carts addQuantity", updateData)
     await getDb().query('UPDATE `carts` SET `totalQuantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
   }
 
   async updateQuantity() {
     const updateData = [this.totalQuantity, this.totalPrice, this.id ]
-    console.log("carts updateQuantity", updateData)
     await getDb().query('UPDATE `carts` SET `totalQuantity` = ?, `totalPrice` = ? WHERE `id` = ?', updateData)
   }
 

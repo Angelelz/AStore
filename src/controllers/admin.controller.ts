@@ -4,10 +4,9 @@ import { Product } from "../models/products.model";
 
 export const getProducts: RequestHandler = async (req, res, next) => {
   let products: Product[]
-  console.log("here")
+  
   try {
     products = await Product.getAll();
-    console.log(products)
   } catch (error) {
     next(error);
     return;
@@ -47,7 +46,6 @@ export const getUpdateProduct: RequestHandler = async (req, res, next) => {
 }
 
 export const updateProduct: RequestHandler = async (req, res, next) => {
-  console.log(req.body)
   const product = new Product({
     ...req.body,
     id: req.params.id
@@ -96,7 +94,7 @@ export const deleteProductPost: RequestHandler = async (req, res, next) => {
 
 export const getOrders: RequestHandler = async (req, res, next)  => {
   try {
-    const orders = await Order.findAll();
+    const orders = await Order.getAll();
     res.render('admin/orders/admin-orders', {
       orders: orders
     });
@@ -110,7 +108,7 @@ export const updateOrder: RequestHandler = async (req, res, next) => {
   const newStatus = req.body.newStatus;
 
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.getById(orderId);
 
     order.status = newStatus;
 

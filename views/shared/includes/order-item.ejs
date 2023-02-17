@@ -1,6 +1,5 @@
 <article class="order-item">
   <header class="order-summary">
-    <%- console.log(order) %>
     <h2><span class="order-item-price">$<%= order.products.totalPrice.toFixed(2) %></span> - <%= order.formattedDate %></h2>
     <p><span class="badge"><%= order.status.toUpperCase() %></span></p>
   </header>

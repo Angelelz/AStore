@@ -43,7 +43,6 @@ export class Product {
   static async findMultiple(ids: string[]) {
 
     return await Promise.all(ids.map(id => {
-      console.log("promise")
       return Product.getById(id)
     }))
   }
@@ -85,7 +84,6 @@ export class Product {
     if (!this.id) {
       throw new Error("The instance of the class has to have an ID")
     }
-    console.log("ID", this.id)
     return getDb().query('DELETE FROM products WHERE id = ?', [this.id])
   }
 }

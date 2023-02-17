@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import { RowDataPacket } from 'mysql2';
 import { getDb } from "../data/database";
-import { DBUser, OrderStatus } from "../types";
+import { OrderStatus } from "../types";
 import { Cart } from "./cart.model";
 import { User } from './user.model';
 
@@ -37,7 +37,7 @@ export class Order {
         this.userData.id,
         this.products.id
       ]]
-      console.log("orders save", insertData);
+      
       return getDb().query('INSERT INTO orders (`id`, `date`, `status`, `userId`, `cartId`) VALUES (?)', insertData);
     }
   }
@@ -56,21 +56,20 @@ export class Order {
   //   return orderDocs.map(this.transformOrderDocument);
   // }
 
-  static async findAll() {
+  static async getAll() {
     const [DBOrder] = await getDb().query<RowDataPacket[]>('SELECT * FROM orders;');
 
-    return await Promise.all((DBOrder as {id: string}[]).map(order => Order.findById(order.id)));
+    return await Promise.all((DBOrder as {id: string}[]).map(order => Order.getById(order.id)));
   }
 
-  static async findAllForUser(userId: string) {
+  static async getAllForUser(userId: string) {
 
     const [DBOrder] = await getDb().query<RowDataPacket[]>('SELECT * FROM orders WHERE userId = ?', [userId]);
-    console.log(DBOrder);
 
-    return await Promise.all((DBOrder as {id: string}[]).map(order => Order.findById(order.id)));
+    return await Promise.all((DBOrder as {id: string}[]).map(order => Order.getById(order.id)));
   }
 
-  static async findById(orderId: string) {
+  static async getById(orderId: string) {
     const [DBOrder] = await getDb().query<RowDataPacket[]>('SELECT * FROM orders WHERE id = ?', [orderId]);
     const cart = await Cart.getById(DBOrder[0].cartId);
     const user = await User.getFullUserById(DBOrder[0].userId)

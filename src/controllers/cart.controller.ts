@@ -15,7 +15,6 @@ export const addCartItemPut: RequestHandler = async (req, res, next) => {
   }
 
   const cart = res.locals.cart
-  console.log("In add to cart put", cart)
 
   await cart.addToCart(product);
   req.session.cart = cart;
