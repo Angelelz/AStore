@@ -6,4 +6,4 @@ export const updateCartPrices: RequestHandler = async (req, res, next) => {
   await cart.updatePrices();
   req.session.cart = cart;
   next();
-}
+};

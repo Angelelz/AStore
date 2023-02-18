@@ -4,9 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const database_1 = require("../data/database");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const crypto_1 = __importDefault(require("crypto"));
+const user_repository_1 = require("../repositories/user.repository");
 class User {
     email;
     password;
@@ -25,44 +24,19 @@ class User {
         };
     }
     async getUserByEmail() {
-        const [dbUser] = await (0, database_1.getDb)().query('SELECT * FROM users WHERE email = ?', [this.email]);
-        return dbUser[0];
+        return await user_repository_1.userRepository.getUserByEmail(this.email);
     }
     static async getById(id) {
-        const [dbUser] = await (0, database_1.getDb)().query('SELECT email, name, id FROM users WHERE id = ?', [id]);
-        return dbUser[0];
-    }
-    static async getAddressByUserId(userId) {
-        const [address] = await (0, database_1.getDb)().query('SELECT * FROM addresses WHERE userId = ?', [userId]);
-        return {
-            street: address[0].street,
-            postal: +address[0].postal,
-            city: address[0].city,
-            id: address[0].id,
-        };
+        return await user_repository_1.userRepository.getById(id);
     }
     static async getFullUserById(id) {
-        const DBUser = await User.getById(id);
-        const address = await User.getAddressByUserId(id);
-        return new User(DBUser.email, "-", DBUser.name, address.street, address.postal, address.city, DBUser.id);
+        return await user_repository_1.userRepository.getFullUserById(id);
     }
-    async userExists() {
-        const user = await this.getUserByEmail();
-        return !!user;
+    userExists() {
+        return user_repository_1.userRepository.emailExists(this.email);
     }
     async signup() {
-        const hasedPassword = await bcryptjs_1.default.hash(this.password, 12);
-        const userId = crypto_1.default.randomUUID();
-        await (0, database_1.getDb)().query("INSERT INTO users (name, password, email, id) VALUES (?)", [[this.name, hasedPassword, this.email, userId]]);
-        await (0, database_1.getDb)().query("INSERT INTO addresses (street, postalCode, city, id, userId) VALUES (?)", [
-            [
-                this.address.street,
-                this.address.postalCode,
-                this.address.city,
-                crypto_1.default.randomUUID(),
-                userId,
-            ],
-        ]);
+        user_repository_1.userRepository.addToDb(this);
     }
     passwordMatch(hashedPassword) {
         return bcryptjs_1.default.compare(this.password, hashedPassword);

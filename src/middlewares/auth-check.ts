@@ -9,4 +9,4 @@ export const checkAuthStatus: RequestHandler = (req, res, next) => {
   res.locals.isAuth = true;
   res.locals.isAdmin = !!req.session.isAdmin;
   next();
-}
+};

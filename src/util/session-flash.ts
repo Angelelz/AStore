@@ -1,12 +1,16 @@
-import { Request } from "express"
+import { Request } from "express";
 
-export const getSessionData = (req: Request) => {
+export const getSessionFlashData = (req: Request) => {
   const sessionData = req.session.flashData;
   req.session.flashData = undefined;
-  return sessionData
-}
+  return sessionData;
+};
 
-export const  flashDataToSession = (req: Request, data: any, action: () => void) => {
+export const flashDataToSession = (
+  req: Request,
+  data: any,
+  action: () => void
+) => {
   req.session.flashData = data;
-  req.session.save(action)
-}
+  req.session.save(action);
+};

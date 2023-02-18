@@ -6,7 +6,7 @@ const user_model_1 = require("../models/user.model");
 const validation_1 = require("../util/validation");
 const session_flash_1 = require("../util/session-flash");
 const getSignup = (req, res) => {
-    let sessionData = (0, session_flash_1.getSessionData)(req);
+    let sessionData = (0, session_flash_1.getSessionFlashData)(req);
     if (!sessionData) {
         sessionData = {
             email: "",
@@ -35,7 +35,7 @@ const signup = async (req, res, next) => {
         !(0, validation_1.confirmationMatches)(req.body.email, req.body["confirm-email"])) {
         (0, session_flash_1.flashDataToSession)(req, {
             errorMessage: "Please check your input. Password must be at least 6 characters long. Postal code should be 5 characters long",
-            ...enteredData
+            ...enteredData,
         }, () => res.redirect("/signup"));
         return;
     }
@@ -45,7 +45,7 @@ const signup = async (req, res, next) => {
         if (userExists) {
             (0, session_flash_1.flashDataToSession)(req, {
                 errorMessage: "User already exists. Try logging in",
-                ...enteredData
+                ...enteredData,
             }, () => res.redirect("/signup"));
             return;
         }
@@ -74,7 +74,7 @@ const login = async (req, res, next) => {
     if (!dbUser) {
         (0, session_flash_1.flashDataToSession)(req, {
             errorMessage: "Invalid credentials",
-            ...enteredData
+            ...enteredData,
         }, () => res.redirect("/login"));
         return;
     }
@@ -82,7 +82,7 @@ const login = async (req, res, next) => {
     if (!passwordIsCorrect) {
         (0, session_flash_1.flashDataToSession)(req, {
             errorMessage: "Invalid credentials",
-            ...enteredData
+            ...enteredData,
         }, () => res.redirect("/login"));
         return;
     }
@@ -96,7 +96,7 @@ const logout = (req, res) => {
 };
 exports.logout = logout;
 const getLogin = (req, res) => {
-    let sessionData = (0, session_flash_1.getSessionData)(req);
+    let sessionData = (0, session_flash_1.getSessionFlashData)(req);
     if (!sessionData) {
         sessionData = {
             email: "",

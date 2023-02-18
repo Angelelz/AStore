@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import { getDb } from "../data/database";
 import { Cart } from "../models/cart.model";
 
 export const initializeCart: RequestHandler = async (req, res, next) => {

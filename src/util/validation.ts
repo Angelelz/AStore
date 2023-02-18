@@ -2,16 +2,11 @@ import { SignUpData } from "../types";
 
 const isEmpty = (val: string) => {
   return !val || val.trim() === "";
-}
+};
 
 const haveValidCrerdentials = (email: string, password: string) => {
-  return (
-    email &&
-    email.includes("@") &&
-    password &&
-    password.trim().length > 5
-  )
-}
+  return email && email.includes("@") && password && password.trim().length > 5;
+};
 
 export const isValidUserInfo = (data: SignUpData) => {
   return (
@@ -24,5 +19,5 @@ export const isValidUserInfo = (data: SignUpData) => {
 };
 
 export const confirmationMatches = (email: string, confirmEmail: string) => {
-  return email === confirmEmail
-}
+  return email === confirmEmail;
+};
