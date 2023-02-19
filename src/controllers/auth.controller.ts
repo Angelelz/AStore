@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import { createUserSession, deleteAuthSession } from "../util/authentication";
 import { User } from "../models/user.model";
-import { DBUser, SignUpData } from "../types";
+import { DatabaseUser, DBUser, SignUpData } from "../types";
 import { confirmationMatches, isValidUserInfo } from "../util/validation";
 import { flashDataToSession, getSessionFlashData } from "../util/session-flash";
 
@@ -88,7 +88,7 @@ export const login: RequestHandler = async (req, res, next) => {
   };
   const user = new User(req.body.email, req.body.password);
 
-  let dbUser: DBUser;
+  let dbUser: DatabaseUser;
 
   try {
     dbUser = await user.getUserByEmail();
